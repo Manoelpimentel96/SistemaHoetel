@@ -97,12 +97,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menuCadastoQuarto = new javax.swing.JMenuItem();
         menuRegistrarLimpeza = new javax.swing.JMenuItem();
         jMenu10 = new javax.swing.JMenu();
-        jMenu11 = new javax.swing.JMenu();
         jMenu12 = new javax.swing.JMenu();
+        jMenu11 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
         jMenu8 = new javax.swing.JMenu();
-        menuCriarReserva = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenu13 = new javax.swing.JMenu();
         menusalario = new javax.swing.JMenuItem();
@@ -161,8 +161,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/foto.png"))); // NOI18N
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/logoHotel.png"))); // NOI18N
-        jLabel1.setText("jLabel1");
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/LOGOHOTELFIGMA.png"))); // NOI18N
 
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setText("Status:");
@@ -188,31 +187,27 @@ public class TelaPrincipal extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(100, 100, 100)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(37, 37, 37)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(100, 100, 100)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(37, 37, 37)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(91, 91, 91)
-                                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(campoCargo, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(campoStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(campoNome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(nomeUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(campoEditarPerfil, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                            .addComponent(jLabel1)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(91, 91, 91)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(campoCargo, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(campoStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(campoNome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(nomeUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(campoEditarPerfil, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -284,6 +279,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenu9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/house_bed_icon-icons.com_74373.png"))); // NOI18N
         jMenu9.setText("Quartos");
 
+        menuCadastoQuarto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/icon_quarto.png"))); // NOI18N
         menuCadastoQuarto.setText("Cadastrar Quartos");
         menuCadastoQuarto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -292,6 +288,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         jMenu9.add(menuCadastoQuarto);
 
+        menuRegistrarLimpeza.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/icon_servicos.png"))); // NOI18N
         menuRegistrarLimpeza.setText("Registrar limpeza e status");
         menuRegistrarLimpeza.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -302,32 +299,30 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenu1.add(jMenu9);
 
-        jMenu10.setText("jMenu10");
+        jMenu10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/bootloader_users_person_people_6080.png"))); // NOI18N
+        jMenu10.setText("Reserva");
         jMenu1.add(jMenu10);
-
-        jMenu11.setText("jMenu11");
-        jMenu1.add(jMenu11);
 
         jMenu12.setText("jMenu12");
         jMenu1.add(jMenu12);
+
+        jMenu11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/business_packages_boxes_products_sellingproducts_thereport_2344.png"))); // NOI18N
+        jMenu11.setText("Fornecedores");
+        jMenu1.add(jMenu11);
 
         jMenuBar1.add(jMenu1);
 
         jMenu2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/reservas.png"))); // NOI18N
         jMenu2.setText("Reservas   |");
 
+        jMenu8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/business_application_addmale_useradd_insert_add_user_client_2312.png"))); // NOI18N
         jMenu8.setText("Cadastro Reserva");
-
-        menuCriarReserva.setText("Criar Reserva");
-        menuCriarReserva.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuCriarReservaActionPerformed(evt);
-            }
-        });
-        jMenu8.add(menuCriarReserva);
 
         jMenuItem1.setText("Consultar Reserva");
         jMenu8.add(jMenuItem1);
+
+        jMenuItem2.setText("Consultar Hospedes");
+        jMenu8.add(jMenuItem2);
 
         jMenu2.add(jMenu8);
 
@@ -428,13 +423,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         tela.setVisible(true);
     }//GEN-LAST:event_menuRegistrarLimpezaActionPerformed
 
-    private void menuCriarReservaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCriarReservaActionPerformed
-        // TODO add your handling code here:
-        TelaCadastrarReserva tela = new TelaCadastrarReserva();
-        Desktop.add(tela);
-        tela.setVisible(true);
-    }//GEN-LAST:event_menuCriarReservaActionPerformed
-
     private void menusalarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menusalarioActionPerformed
         // TODO add your handling code here:
         TelaLiberarPagamentoSalario tela = new TelaLiberarPagamentoSalario();
@@ -506,12 +494,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu9;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanelRodape;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuItem menuCadastoQuarto;
     private javax.swing.JMenuItem menuConsultarSalario;
-    private javax.swing.JMenuItem menuCriarReserva;
     private javax.swing.JMenuItem menuFecharSistema;
     private javax.swing.JMenuItem menuFuncionario;
     private javax.swing.JMenuItem menuRegistrarLimpeza;

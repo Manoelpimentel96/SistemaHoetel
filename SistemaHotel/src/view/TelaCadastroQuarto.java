@@ -4,6 +4,16 @@
  */
 package view;
 
+import controller.PrecoQuartoController;
+import model.PrecoQuarto;
+
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
+
+import controller.QuartoController;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import model.Quarto;
 import util.SomenteNumeros;
 
 /**
@@ -12,11 +22,56 @@ import util.SomenteNumeros;
  */
 public class TelaCadastroQuarto extends javax.swing.JInternalFrame {
 
+    private final QuartoController quartoController = new QuartoController();
+    private final PrecoQuartoController precoController = new PrecoQuartoController();
+    private final java.util.List<PrecoQuarto> precosTemp = new java.util.ArrayList<>();
+
     /**
      * Creates new form CadastroQuarto
      */
     public TelaCadastroQuarto() {
         initComponents();
+    }
+
+    private void preencherTabelaQuartos(List<Quarto> lista) {
+        DefaultTableModel model = (DefaultTableModel) tabelaDadosQuarto.getModel();
+        model.setRowCount(0);
+
+        for (Quarto q : lista) {
+
+            // buscar preços vinculados
+            List<PrecoQuarto> precos = precoController.listarPorQuartoId(q.getId());
+
+            if (precos.isEmpty()) {
+                // caso não tenha preços
+                model.addRow(new Object[]{
+                    q.getId(),
+                    q.getNumero(),
+                    q.getTipo(),
+                    q.getStatus(),
+                    q.getNumCamas(),
+                    "—",
+                    "—",
+                    q.getObservacao(),
+                    q.getCriadoEm() != null ? q.getCriadoEm() : "—"
+                });
+            } else {
+                // adiciona uma linha para cada preço de ocupação
+                for (PrecoQuarto p : precos) {
+                    model.addRow(new Object[]{
+                        q.getId(),
+                        q.getNumero(),
+                        q.getTipo(),
+                        q.getStatus(),
+                        q.getNumCamas(),
+                        p.getOcupacao(),
+                        p.getPreco(),
+                        q.getObservacao(),
+                        q.getCriadoEm() != null ? q.getCriadoEm() : "—"
+                    });
+                }
+            }
+        }
     }
 
     /**
@@ -40,7 +95,7 @@ public class TelaCadastroQuarto extends javax.swing.JInternalFrame {
         btnFechar = new javax.swing.JButton();
         btnCadastrarQuarto = new javax.swing.JButton();
         btnCadastrarPrecoQuartos = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btnRemoverPreco = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         tabelaPrecoQuarto = new javax.swing.JTable();
         jPanel6 = new javax.swing.JPanel();
@@ -87,6 +142,11 @@ public class TelaCadastroQuarto extends javax.swing.JInternalFrame {
         btnLimpar.setBackground(new java.awt.Color(0, 51, 51));
         btnLimpar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/icon_limpar.png"))); // NOI18N
         btnLimpar.setText("Limpar");
+        btnLimpar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimparActionPerformed(evt);
+            }
+        });
 
         jScrollPane4.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -126,9 +186,14 @@ public class TelaCadastroQuarto extends javax.swing.JInternalFrame {
             }
         });
 
-        jButton1.setBackground(new java.awt.Color(0, 51, 51));
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/icon_excluir.png"))); // NOI18N
-        jButton1.setText("Remover Preço");
+        btnRemoverPreco.setBackground(new java.awt.Color(0, 51, 51));
+        btnRemoverPreco.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/icon_excluir.png"))); // NOI18N
+        btnRemoverPreco.setText("Remover Preço");
+        btnRemoverPreco.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoverPrecoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -138,7 +203,7 @@ public class TelaCadastroQuarto extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnCadastrarPrecoQuartos)
                 .addGap(50, 50, 50)
-                .addComponent(jButton1)
+                .addComponent(btnRemoverPreco)
                 .addGap(50, 50, 50)
                 .addComponent(btnCadastrarQuarto)
                 .addGap(50, 50, 50)
@@ -153,7 +218,7 @@ public class TelaCadastroQuarto extends javax.swing.JInternalFrame {
                     .addComponent(btnFechar)
                     .addComponent(btnCadastrarQuarto)
                     .addComponent(btnCadastrarPrecoQuartos)
-                    .addComponent(jButton1))
+                    .addComponent(btnRemoverPreco))
                 .addContainerGap())
         );
 
@@ -354,11 +419,11 @@ public class TelaCadastroQuarto extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "ID", "NUN. QUARTO", "TIPO", "STATUS", "NUM. CAMAS", "CRIADO EM", "OBSERVAÇÕES"
+                "ID", "NUN. QUARTO", "TIPO", "STATUS", "NUM. CAMAS", "OCUPAÇÃO", "PREÇO", "CRIADO EM", "OBSERVAÇÕES"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -447,60 +512,298 @@ public class TelaCadastroQuarto extends javax.swing.JInternalFrame {
 
     private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFecharActionPerformed
         // TODO add your handling code here:
-        /**
-         * Ação: Fechar a tela.
-         */
         dispose();
     }//GEN-LAST:event_btnFecharActionPerformed
 
     private void btnConsultarQuartoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarQuartoActionPerformed
         // TODO add your handling code here:
-        /**
-         * Ação:
-         */
+        try {
+            if (campoNumQuarto.getText().isBlank()) {
+                preencherTabelaQuartos(quartoController.listarTodos());
+                return;
+            }
+            int numero = Integer.parseInt(campoNumQuarto.getText().trim());
+            Quarto q = quartoController.buscarPorNumero(numero);
+            if (q != null) {
+                preencherTabelaQuartos(List.of(q));
+            } else {
+                JOptionPane.showMessageDialog(this, "Quarto não encontrado.");
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Número do quarto inválido.");
+        }
     }//GEN-LAST:event_btnConsultarQuartoActionPerformed
 
     private void btnEditarQuartoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarQuartoActionPerformed
         // TODO add your handling code here:
-        /**
-         * Ação:
-         */
+        int linha = tabelaDadosQuarto.getSelectedRow();
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione um quarto para editar!");
+            return;
+        }
+        int id = (int) tabelaDadosQuarto.getValueAt(linha, 0);
+        Quarto q = quartoController.buscarPorId(id);
+        if (q != null) {
+            numQuarto.setText(String.valueOf(q.getNumero()));
+            comboTipoQuarto.setSelectedItem(q.getTipo());
+            comboStatusQuarto.setSelectedItem(q.getStatus());
+            campoNumCamas.setText(String.valueOf(q.getNumCamas()));
+            areaObservacao.setText(q.getObservacao());
+            // store id somewhere (ex.: campo oculto) para atualizar
+            numQuarto.putClientProperty("editingId", q.getId());
+        }
     }//GEN-LAST:event_btnEditarQuartoActionPerformed
 
     private void btnExcluirQuartoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirQuartoActionPerformed
         // TODO add your handling code here:
-        /**
-         * Ação:
-         */
+
+        int linha = tabelaDadosQuarto.getSelectedRow();
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione um quarto na tabela!");
+            return;
+        }
+
+        int idQuarto = (int) tabelaDadosQuarto.getValueAt(linha, 0);
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Deseja realmente excluir este quarto?\nOs preços vinculados também serão removidos.",
+                "Confirmação",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            QuartoController controller = new QuartoController();
+            if (controller.excluirQuartoIfDisponivel(idQuarto)) {
+                JOptionPane.showMessageDialog(this, "Quarto excluído com sucesso!");
+                // recarregar tabela
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Não foi possível excluir.\nVerifique se o quarto está DISPONÍVEL.");
+            }
+        }
+
     }//GEN-LAST:event_btnExcluirQuartoActionPerformed
 
     private void btnSalvarPreCadastroQuartoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarPreCadastroQuartoActionPerformed
         // TODO add your handling code here:
-        /**
-         * Ação:
-         */
+        try {
+            Quarto q = new Quarto();
+            q.setNumero(Integer.parseInt(numQuarto.getText().trim()));
+            q.setTipo(comboTipoQuarto.getSelectedItem().toString());
+            q.setNumCamas(Integer.parseInt(campoNumCamas.getText().trim()));
+            q.setStatus(comboStatusQuarto.getSelectedItem().toString());
+            q.setObservacao(areaObservacao.getText());
+
+            // SALVA E RETORNA ID
+            int idGerado = quartoController.cadastrarRetornandoId(q);
+
+            if (idGerado <= 0) {
+                JOptionPane.showMessageDialog(this, "Erro ao realizar pré-cadastro.");
+                return;
+            }
+
+            // GUARDA O ID DO PRÉ-CADASTRO!!!
+            numQuarto.putClientProperty("preCadastroId", idGerado);
+
+            JOptionPane.showMessageDialog(this,
+                    "Pré-cadastro realizado com sucesso! ID: " + idGerado);
+
+            preencherTabelaQuartos(quartoController.listarTodos());
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Erro: " + ex.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
     }//GEN-LAST:event_btnSalvarPreCadastroQuartoActionPerformed
 
     private void btnAtualizarQuartoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtualizarQuartoActionPerformed
         // TODO add your handling code here:
-        /**
-         * Ação:
-         */
+        Object obj = numQuarto.getClientProperty("editingId");
+        if (obj == null) {
+            JOptionPane.showMessageDialog(this, "Nenhum quarto em edição. Selecione um e clique em Editar.");
+            return;
+        }
+        try {
+            int id = (int) obj;
+            Quarto q = new Quarto();
+            q.setId(id);
+            q.setNumero(Integer.parseInt(numQuarto.getText().trim()));
+            q.setTipo(comboTipoQuarto.getSelectedItem().toString());
+            q.setNumCamas(Integer.parseInt(campoNumCamas.getText().trim()));
+            q.setStatus(comboStatusQuarto.getSelectedItem().toString());
+            q.setObservacao(areaObservacao.getText());
+
+            boolean ok = quartoController.atualizarQuarto(q);
+            if (ok) {
+                JOptionPane.showMessageDialog(this, "Quarto atualizado com sucesso!");
+                preencherTabelaQuartos(quartoController.listarTodos());
+                numQuarto.putClientProperty("editingId", null);
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao atualizar quarto.");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnAtualizarQuartoActionPerformed
 
     private void btnCadastrarPrecoQuartosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarPrecoQuartosActionPerformed
         // TODO add your handling code here:
-        /**
-         * Ação:
-         */
+        JTextField txtOcupacao = new JTextField();
+        JTextField txtPreco = new JTextField();
+
+        Object[] campos = {
+            "Ocupação (Qtd. hóspedes):", txtOcupacao,
+            "Preço da diária (R$):", txtPreco
+        };
+
+        int opcao = JOptionPane.showOptionDialog(
+                this,
+                campos,
+                "Adicionar Preço ao Quarto",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                new Object[]{"Adicionar Preço", "Cancelar"},
+                "Adicionar Preço"
+        );
+
+        if (opcao != 0) {
+            return;
+        }
+
+        if (txtOcupacao.getText().isEmpty()
+                || txtPreco.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos!");
+            return;
+        }
+
+        try {
+            int ocupacao = Integer.parseInt(txtOcupacao.getText());
+            double preco = Double.parseDouble(txtPreco.getText().replace(",", "."));
+
+            PrecoQuarto pq = new PrecoQuarto();
+            pq.setOcupacao(ocupacao);
+            pq.setPreco(preco);
+
+            precosTemp.add(pq);
+
+            DefaultTableModel model = (DefaultTableModel) tabelaPrecoQuarto.getModel();
+            model.addRow(new Object[]{ocupacao, preco});
+
+            JOptionPane.showMessageDialog(this,
+                    "Preço adicionado! (Ainda não salvo no banco)");
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Valores inválidos.");
+        }
+
     }//GEN-LAST:event_btnCadastrarPrecoQuartosActionPerformed
 
     private void btnCadastrarQuartoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarQuartoActionPerformed
         // TODO add your handling code here:
-        /**
-         * Ação:
-         */
+
+        Object obj = numQuarto.getClientProperty("preCadastroId");
+
+        if (obj == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Você precisa realizar o PRÉ-CADASTRO antes de finalizar!");
+            return;
+        }
+
+        int idQuarto = (int) obj;
+
+        try {
+            // SALVAR PREÇOS VINCULADOS AO QUARTO
+            for (PrecoQuarto pq : precosTemp) {
+                pq.setQuartoId(idQuarto);
+                precoController.cadastrar(pq);
+            }
+
+            JOptionPane.showMessageDialog(this,
+                    "Cadastro finalizado com sucesso!");
+
+            precosTemp.clear();
+            ((DefaultTableModel) tabelaPrecoQuarto.getModel()).setRowCount(0);
+
+            numQuarto.putClientProperty("preCadastroId", null);
+
+            preencherTabelaQuartos(quartoController.listarTodos());
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
+        }
+
     }//GEN-LAST:event_btnCadastrarQuartoActionPerformed
+
+    private void btnRemoverPrecoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverPrecoActionPerformed
+        // TODO add your handling code here:
+        int linha = tabelaPrecoQuarto.getSelectedRow();
+
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Selecione um preço na tabela para remover!");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Deseja realmente remover este preço?",
+                "Confirmação",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+
+            // REMOVE DA LISTA TEMPORÁRIA
+            precosTemp.remove(linha);
+
+            // REMOVE DA TABELA VISUAL
+            DefaultTableModel model = (DefaultTableModel) tabelaPrecoQuarto.getModel();
+            model.removeRow(linha);
+
+            JOptionPane.showMessageDialog(this, "Preço removido com sucesso!");
+        }
+
+    }//GEN-LAST:event_btnRemoverPrecoActionPerformed
+
+    private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
+        // TODO add your handling code here:
+        limparCampos();
+    }//GEN-LAST:event_btnLimparActionPerformed
+
+    private void limparCampos() {
+
+        // Campos de texto
+        numQuarto.setText("");
+        campoNumCamas.setText("");
+        campoNumQuarto.setText("");
+        areaObservacao.setText("");
+
+        // Combos
+        comboTipoQuarto.setSelectedIndex(0);
+        comboStatusQuarto.setSelectedIndex(0);
+
+        // Remove ID de edição (caso exista)
+        numQuarto.putClientProperty("editingId", null);
+
+        // Limpa tabela de preços
+        DefaultTableModel modelPrecos = (DefaultTableModel) tabelaPrecoQuarto.getModel();
+        modelPrecos.setRowCount(0);
+
+        // Limpa lista temporária
+        precosTemp.clear();
+
+        // Limpa tabela de consulta de quartos
+        DefaultTableModel modelQuartos = (DefaultTableModel) tabelaDadosQuarto.getModel();
+        modelQuartos.setRowCount(0);
+
+        // Mensagem opcional
+        // JOptionPane.showMessageDialog(this, "Campos limpos!");
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -513,12 +816,12 @@ public class TelaCadastroQuarto extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnExcluirQuarto;
     private javax.swing.JButton btnFechar;
     private javax.swing.JButton btnLimpar;
+    private javax.swing.JButton btnRemoverPreco;
     private javax.swing.JButton btnSalvarPreCadastroQuarto;
     private javax.swing.JTextField campoNumCamas;
     private javax.swing.JTextField campoNumQuarto;
     private javax.swing.JComboBox<String> comboStatusQuarto;
     private javax.swing.JComboBox<String> comboTipoQuarto;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

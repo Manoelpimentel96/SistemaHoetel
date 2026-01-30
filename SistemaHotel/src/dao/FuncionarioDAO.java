@@ -8,6 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import model.Funcionario;
+import model.PagamentoFuncionario;
 import util.ConnectionFactory;
 import util.Criptografia;
 
@@ -230,7 +231,8 @@ public class FuncionarioDAO {
     public List<Funcionario> listarTodos() {
         List<Funcionario> lista = new ArrayList<>();
         String sql = "SELECT * FROM funcionarios";
-        try (Connection conn = ConnectionFactory.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = ConnectionFactory.getConnection(); 
+                PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Funcionario f = new Funcionario();
@@ -377,4 +379,59 @@ public class FuncionarioDAO {
             excluirDefinitivo(id);
         }
     }
+
+    // Metodo usado na tela consultar salario
+    // Tela consultar salario funcionario
+    public PagamentoFuncionario buscarUltimoPagamento(int funcionarioId) {
+        PagamentoFuncionario pg = null;
+
+        String sql = """
+        SELECT p.*, r.id AS resp_id, r.nome AS resp_nome, r.cargo AS resp_cargo, r.cpf AS resp_cpf
+        FROM pagamentos_funcionarios p
+        LEFT JOIN funcionarios r ON r.id = p.responsavel_id
+        WHERE p.funcionario_id = ?
+        ORDER BY p.ano_pagamento DESC, p.mes_pagamento DESC
+        LIMIT 1
+    """;
+
+        try (Connection conn = ConnectionFactory.getConnection(); 
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, funcionarioId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                pg = new PagamentoFuncionario();
+
+                pg.setId(rs.getInt("id"));
+                pg.setAumento(rs.getDouble("aumento"));
+                pg.setDesconto(rs.getDouble("desconto"));
+                pg.setValorPago(rs.getDouble("valor_pago"));
+
+                Date lib = rs.getDate("data_liberacao");
+                pg.setDataLiberacao(lib != null ? lib.toLocalDate() : null);
+
+                Timestamp ef = rs.getTimestamp("data_efetuado");
+                pg.setDataEfetuado(ef != null ? ef.toLocalDateTime() : null);
+
+                pg.setStatusPagamento(rs.getString("status_pagamento"));
+                pg.setMesPagamento(rs.getInt("mes_pagamento"));
+                pg.setAnoPagamento(rs.getInt("ano_pagamento"));
+
+                // Responsável
+                Funcionario resp = new Funcionario();
+                resp.setId(rs.getInt("resp_id"));
+                resp.setNome(rs.getString("resp_nome"));
+                resp.setCargo(rs.getString("resp_cargo"));
+                resp.setCpf(rs.getString("resp_cpf"));
+                pg.setResponsavel(resp);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return pg;
+    }
+
 }

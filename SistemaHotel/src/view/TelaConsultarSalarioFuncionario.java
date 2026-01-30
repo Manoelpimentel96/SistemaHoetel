@@ -4,8 +4,11 @@
  */
 package view;
 
+import dao.FuncionarioDAO;
 import java.util.List;
+import javax.swing.JOptionPane;
 import model.Funcionario;
+import model.PagamentoFuncionario;
 
 /**
  *
@@ -20,8 +23,60 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         initComponents();
     }
 
-    private void CampoResumoFuncionario(List<Funcionario> lista) {
+    private void CampoResumoFuncionario(Funcionario f, PagamentoFuncionario p) {
 
+        // --- CAMPOS DO FUNCIONÁRIO ---
+        campoID.setText(String.valueOf(f.getId()));
+        campoNome.setText(f.getNome());
+        campoCpf.setText(f.getCpf());
+        campoCargo.setText(f.getCargo());
+        campoTelefone.setText(f.getTelefone());
+
+        campoStatusFuncionario.setText(f.getStatus());
+        dataAdmissao.setText(String.valueOf(f.getDataAdmissao()));
+        campoSalarioBase.setText(String.format("R$ %.2f", f.getSalario()));
+
+
+        // --- STATUS ATUAL DE PAGAMENTO NA TABELA FUNCIONÁRIO ---
+        campoStatusPagamento.setText(f.getStatus_pag_salario());
+        dataLiberacao.setText(
+                f.getData_liberacao_salario() != null ? f.getData_liberacao_salario().toString() : "-"
+        );
+
+        // --- CASO NÃO EXISTA HISTÓRICO ---
+        if (p == null) {
+            campoAumento.setText("R$ 0.00");
+            campoDesconto.setText("R$ 0.00");
+            campoValorPagar.setText("R$ 0.00");
+            
+            campoStatusPagamento.setText("-");
+            campoValorSalarioFinal.setText("-");
+            nomeResponsavelPagador.setText("-");
+
+            return;
+        }
+
+        // --- ÚLTIMO PAGAMENTO ---
+        campoAumento.setText(String.format("R$ %.2f", p.getAumento()));
+        campoDesconto.setText(String.format("R$ %.2f", p.getDesconto()));
+        campoValorPagar.setText(String.format("R$ %.2f", p.getValorPago()));
+        campoValorSalarioFinal.setText(String.format("R$ %.2f", p.getValorPago()));
+        
+        dataLiberacao.setText(
+                p.getDataLiberacao() != null ? p.getDataLiberacao().toString() : "-"
+        );
+
+        campoStatusPagamento.setText(p.getStatusPagamento());
+        campoMesAnoPagamento.setText(p.getMesPagamento() + "/" + p.getAnoPagamento());
+
+        if (p.getResponsavel() != null) {
+            campoIDResponsavel.setText(String.valueOf(p.getResponsavel().getId()));
+            nomeResponsavelPagador.setText(p.getResponsavel().getNome());
+            campoCpfResponsavel.setText(p.getResponsavel().getCpf());
+            campoCargoResponsavel.setText(p.getResponsavel().getCargo());
+        } else {
+            nomeResponsavelPagador.setText("-");
+        }
     }
 
     /**
@@ -46,7 +101,7 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         jLabel8 = new javax.swing.JLabel();
         campoCpf = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        campoStatusP = new javax.swing.JLabel();
+        campoStatusFuncionario = new javax.swing.JLabel();
         campoID = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -70,6 +125,10 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         jLabel26 = new javax.swing.JLabel();
         dataLiberacao = new javax.swing.JLabel();
         campoValorSalarioFinal = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        campoMesAnoPagamento = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        campoObservacao = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         btnHistoricoPagamento = new javax.swing.JButton();
         btnFechar = new javax.swing.JButton();
@@ -77,10 +136,10 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         jLabel11 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         NOME = new javax.swing.JLabel();
-        campoIDPagador = new javax.swing.JLabel();
-        nomePagador = new javax.swing.JLabel();
-        campoCargoPagador = new javax.swing.JLabel();
-        campoCpfPagador = new javax.swing.JLabel();
+        campoIDResponsavel = new javax.swing.JLabel();
+        nomeResponsavelPagador = new javax.swing.JLabel();
+        campoCargoResponsavel = new javax.swing.JLabel();
+        campoCpfResponsavel = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
@@ -128,7 +187,6 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel6.setText("NOME");
 
-        campoNome.setBackground(new java.awt.Color(255, 255, 255));
         campoNome.setForeground(new java.awt.Color(255, 255, 255));
         campoNome.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         campoNome.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -136,7 +194,6 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel8.setText("CPF");
 
-        campoCpf.setBackground(new java.awt.Color(255, 255, 255));
         campoCpf.setForeground(new java.awt.Color(255, 255, 255));
         campoCpf.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         campoCpf.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -144,12 +201,10 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel10.setText("STATUS");
 
-        campoStatusP.setBackground(new java.awt.Color(255, 255, 255));
-        campoStatusP.setForeground(new java.awt.Color(255, 255, 255));
-        campoStatusP.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        campoStatusP.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        campoStatusFuncionario.setForeground(new java.awt.Color(255, 255, 255));
+        campoStatusFuncionario.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        campoStatusFuncionario.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
-        campoID.setBackground(new java.awt.Color(255, 255, 255));
         campoID.setForeground(new java.awt.Color(255, 255, 255));
         campoID.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         campoID.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -160,7 +215,6 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel5.setText("CARGO");
 
-        campoCargo.setBackground(new java.awt.Color(255, 255, 255));
         campoCargo.setForeground(new java.awt.Color(255, 255, 255));
         campoCargo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         campoCargo.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -168,7 +222,6 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel18.setText("DATA ADIMISSÃO");
 
-        dataAdmissao.setBackground(new java.awt.Color(255, 255, 255));
         dataAdmissao.setForeground(new java.awt.Color(255, 255, 255));
         dataAdmissao.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         dataAdmissao.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -176,7 +229,6 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel19.setText("SALARIO BASE");
 
-        campoSalarioBase.setBackground(new java.awt.Color(255, 255, 255));
         campoSalarioBase.setForeground(new java.awt.Color(255, 255, 255));
         campoSalarioBase.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         campoSalarioBase.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -205,7 +257,7 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
                     .addComponent(campoCargo, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(51, 51, 51)
                 .addGroup(panelRecebedoPagamentoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(campoStatusP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(campoStatusFuncionario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(campoTelefone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -260,7 +312,7 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
                             .addGroup(panelRecebedoPagamentoLayout.createSequentialGroup()
                                 .addGroup(panelRecebedoPagamentoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(campoSalarioBase, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(campoStatusP, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(campoStatusFuncionario, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 1, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelRecebedoPagamentoLayout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
@@ -268,7 +320,7 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
                 .addGap(6, 6, 6))
         );
 
-        panelDadosSalario.setBorder(javax.swing.BorderFactory.createTitledBorder("Dados Salário"));
+        panelDadosSalario.setBorder(javax.swing.BorderFactory.createTitledBorder("Dados de Pagamento Salário"));
 
         jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel13.setText("STATUS PAGAMENTO");
@@ -280,7 +332,6 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         campoStatusPagamento.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         campoStatusPagamento.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
-        campoAumento.setBackground(new java.awt.Color(255, 0, 0));
         campoAumento.setForeground(new java.awt.Color(255, 255, 255));
         campoAumento.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         campoAumento.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -312,6 +363,14 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
         campoValorSalarioFinal.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         campoValorSalarioFinal.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
+        jLabel7.setText("Mês e Ano");
+
+        campoMesAnoPagamento.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+
+        jLabel14.setText("Observação");
+
+        campoObservacao.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+
         javax.swing.GroupLayout panelDadosSalarioLayout = new javax.swing.GroupLayout(panelDadosSalario);
         panelDadosSalario.setLayout(panelDadosSalarioLayout);
         panelDadosSalarioLayout.setHorizontalGroup(
@@ -323,30 +382,38 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
                         .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                             .addComponent(campoAumento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(135, 135, 135)
+                        .addGap(39, 39, 39)
                         .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelDadosSalarioLayout.createSequentialGroup()
                                 .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 88, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(panelDadosSalarioLayout.createSequentialGroup()
                                 .addComponent(campoDesconto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(88, 88, 88)))
-                        .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(campoValorPagar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addGap(25, 25, 25)))
+                        .addGap(20, 20, 20)
+                        .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(campoValorPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(40, 40, 40))
                     .addGroup(panelDadosSalarioLayout.createSequentialGroup()
                         .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(campoStatusPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(135, 135, 135)
+                        .addGap(39, 39, 39)
                         .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(dataLiberacao, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(dataLiberacao, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(45, 45, 45)
                         .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(campoValorSalarioFinal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel26, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(72, 72, 72))
+                            .addComponent(campoValorSalarioFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(campoMesAnoPagamento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel14)
+                    .addComponent(campoObservacao, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         panelDadosSalarioLayout.setVerticalGroup(
             panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -354,30 +421,36 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
                 .addGap(0, 0, 0)
                 .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelDadosSalarioLayout.createSequentialGroup()
-                        .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel23, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel15)
-                                .addComponent(jLabel21)))
+                        .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel15)
+                            .addComponent(jLabel21))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(campoDesconto, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDadosSalarioLayout.createSequentialGroup()
                                 .addComponent(campoAumento, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(1, 1, 1))))
+                                .addGap(6, 6, 6))))
                     .addGroup(panelDadosSalarioLayout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(campoValorPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(5, 5, 5)
+                        .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel23, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel7)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(campoValorPagar, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                            .addComponent(campoMesAnoPagamento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(5, 5, 5)))
                 .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelDadosSalarioLayout.createSequentialGroup()
-                        .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel25)
-                            .addComponent(jLabel26))
+                            .addComponent(jLabel26)
+                            .addComponent(jLabel14))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelDadosSalarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(dataLiberacao, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(campoValorSalarioFinal, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)))
+                            .addComponent(campoValorSalarioFinal, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                            .addComponent(campoObservacao, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(panelDadosSalarioLayout.createSequentialGroup()
                         .addComponent(jLabel13)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -432,17 +505,17 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
 
         NOME.setText("CARGO");
 
-        campoIDPagador.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        campoIDPagador.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        campoIDResponsavel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        campoIDResponsavel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
-        nomePagador.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        nomePagador.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        nomeResponsavelPagador.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        nomeResponsavelPagador.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
-        campoCargoPagador.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        campoCargoPagador.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        campoCargoResponsavel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        campoCargoResponsavel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
-        campoCpfPagador.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        campoCpfPagador.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        campoCpfResponsavel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        campoCpfResponsavel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
         jLabel17.setText("CPF");
 
@@ -453,23 +526,23 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
             .addGroup(panelDadosPagadoLayout.createSequentialGroup()
                 .addGap(34, 34, 34)
                 .addGroup(panelDadosPagadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(campoIDPagador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(campoIDResponsavel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(51, 51, 51)
                 .addGroup(panelDadosPagadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                    .addComponent(nomePagador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(nomeResponsavelPagador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGroup(panelDadosPagadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelDadosPagadoLayout.createSequentialGroup()
                         .addGap(34, 34, 34)
-                        .addComponent(campoCpfPagador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(campoCpfResponsavel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDadosPagadoLayout.createSequentialGroup()
                         .addGap(33, 33, 33)
                         .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelDadosPagadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(NOME, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
-                    .addComponent(campoCargoPagador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(campoCargoResponsavel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(50, 50, 50))
         );
         panelDadosPagadoLayout.setVerticalGroup(
@@ -480,7 +553,7 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
                     .addGroup(panelDadosPagadoLayout.createSequentialGroup()
                         .addComponent(jLabel11)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoIDPagador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(campoIDResponsavel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(panelDadosPagadoLayout.createSequentialGroup()
                         .addGroup(panelDadosPagadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(NOME)
@@ -488,9 +561,9 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
                             .addComponent(jLabel17))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelDadosPagadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(campoCpfPagador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(campoCargoPagador, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(nomePagador, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
+                            .addComponent(campoCpfResponsavel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(campoCargoResponsavel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(nomeResponsavelPagador, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -564,10 +637,26 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
     private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
         // TODO add your handling code here:
 
-        /**
-         * Ação: vai consultar um funcionario pelo cpf e preenche os campos que
-         * estão aqui CampoResumoFuncionario
-         */
+        String cpf = campoConsultarCpf.getText().trim();
+
+        if (cpf.equals("   .   .   -  ")) {
+            JOptionPane.showMessageDialog(this, "Informe um CPF válido!");
+            return;
+        }
+
+        FuncionarioDAO dao = new FuncionarioDAO();
+        Funcionario f = dao.buscarPorCpf(cpf);
+
+        if (f == null) {
+            JOptionPane.showMessageDialog(this, "Nenhum funcionário encontrado com esse CPF.");
+            return;
+        }
+
+        PagamentoFuncionario ultimoPgto = dao.buscarUltimoPagamento(f.getId());
+
+        // Preenche a tela
+        CampoResumoFuncionario(f, ultimoPgto);
+
     }//GEN-LAST:event_btnConsultarActionPerformed
 
     private void btnHistoricoPagamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHistoricoPagamentoActionPerformed
@@ -594,16 +683,18 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
     private javax.swing.JButton btnLimpar;
     private javax.swing.JLabel campoAumento;
     private javax.swing.JLabel campoCargo;
-    private javax.swing.JLabel campoCargoPagador;
+    private javax.swing.JLabel campoCargoResponsavel;
     private javax.swing.JFormattedTextField campoConsultarCpf;
     private javax.swing.JLabel campoCpf;
-    private javax.swing.JLabel campoCpfPagador;
+    private javax.swing.JLabel campoCpfResponsavel;
     private javax.swing.JLabel campoDesconto;
     private javax.swing.JLabel campoID;
-    private javax.swing.JLabel campoIDPagador;
+    private javax.swing.JLabel campoIDResponsavel;
+    private javax.swing.JLabel campoMesAnoPagamento;
     private javax.swing.JLabel campoNome;
+    private javax.swing.JLabel campoObservacao;
     private javax.swing.JLabel campoSalarioBase;
-    private javax.swing.JLabel campoStatusP;
+    private javax.swing.JLabel campoStatusFuncionario;
     private javax.swing.JLabel campoStatusPagamento;
     private javax.swing.JLabel campoTelefone;
     private javax.swing.JLabel campoValorPagar;
@@ -615,6 +706,7 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
@@ -628,10 +720,11 @@ public class TelaConsultarSalarioFuncionario extends javax.swing.JInternalFrame 
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JLabel nomePagador;
+    private javax.swing.JLabel nomeResponsavelPagador;
     private javax.swing.JPanel panelDadosPagado;
     private javax.swing.JPanel panelDadosSalario;
     private javax.swing.JPanel panelRecebedoPagamento;

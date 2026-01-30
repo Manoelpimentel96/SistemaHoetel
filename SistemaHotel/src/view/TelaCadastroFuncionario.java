@@ -639,22 +639,6 @@ public class TelaCadastroFuncionario extends javax.swing.JInternalFrame {
             preencherTabela(controller.listarTodos());
         }
 
-        /*int linha = tableDadosFuncionarios.getSelectedRow();
-        if (linha == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione um funcionário para excluir!");
-            return;
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Deseja realmente excluir este funcionário?", "Confirmação", JOptionPane.YES_NO_OPTION);
-        
-        if (confirm == JOptionPane.YES_OPTION) {
-            int id = (int) tableDadosFuncionarios.getValueAt(linha, 0);
-            controller.excluir(id);
-            JOptionPane.showMessageDialog(this, "Funcionário excluído com sucesso!");
-            preencherTabela(controller.listarTodos());
-        }*/
-
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed

@@ -12,17 +12,11 @@ import model.PagamentoFuncionario;
 import javax.swing.table.DefaultTableModel;
 import controller.PagamentoFuncionarioController;
 import dao.FuncionarioDAO;
-import dao.PagamentoFuncionarioDAO;
-import java.awt.GridLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import model.Funcionario;
 import java.util.List;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import util.CampoMoeda;
 import util.UsuarioLogado;
 

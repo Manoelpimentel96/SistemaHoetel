@@ -7,17 +7,44 @@ package view;
 import util.SomenteLetras;
 import util.SomenteNumeros;
 
+import controller.QuartoController;
+import model.Quarto;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import java.util.Date;
+
 /**
  *
  * @author manoelpimentel
  */
 public class TelaCadastrarLimpeza extends javax.swing.JInternalFrame {
 
+    private final QuartoController quartoController = new QuartoController();
+    private Quarto quartoSelecionado = null;
+
     /**
      * Creates new form CadastrarLimpeza
      */
     public TelaCadastrarLimpeza() {
         initComponents();
+    }
+
+    private void preencherTabelaQuarto(List<Quarto> lista) {
+        DefaultTableModel model = (DefaultTableModel) tabelDadosQuarto.getModel();
+        model.setRowCount(0);
+
+        for (Quarto q : lista) {
+            model.addRow(new Object[]{
+                q.getId(),
+                q.getNumero(),
+                q.getTipo(),
+                q.getStatus(),
+                q.getNumCamas(),
+                q.getCriadoEm() != null ? q.getCriadoEm() : "—",
+                q.getObservacao()
+            });
+        }
     }
 
     /**
@@ -91,14 +118,29 @@ public class TelaCadastrarLimpeza extends javax.swing.JInternalFrame {
         btnRegistrarLimpeza.setBackground(new java.awt.Color(0, 51, 51));
         btnRegistrarLimpeza.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/icon_salvar.png"))); // NOI18N
         btnRegistrarLimpeza.setText("Registrar Limpeza");
+        btnRegistrarLimpeza.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegistrarLimpezaActionPerformed(evt);
+            }
+        });
 
         btnCancelar.setBackground(new java.awt.Color(0, 51, 51));
         btnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/icon_excluir.png"))); // NOI18N
         btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
 
         btnFechar.setBackground(new java.awt.Color(0, 51, 51));
         btnFechar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/icon_bot_excluir.png"))); // NOI18N
         btnFechar.setText("Fechar");
+        btnFechar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFecharActionPerformed(evt);
+            }
+        });
 
         SomenteLetras.aplicarComCapitalizacao(campoNome);
 
@@ -194,6 +236,11 @@ public class TelaCadastrarLimpeza extends javax.swing.JInternalFrame {
         btnRegistrarNovoStatus.setBackground(new java.awt.Color(0, 51, 51));
         btnRegistrarNovoStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/icon_bot_salvar.png"))); // NOI18N
         btnRegistrarNovoStatus.setText("Registrar Novo Status");
+        btnRegistrarNovoStatus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegistrarNovoStatusActionPerformed(evt);
+            }
+        });
 
         jScrollPane1.setBorder(null);
 
@@ -218,10 +265,20 @@ public class TelaCadastrarLimpeza extends javax.swing.JInternalFrame {
         btnConsultarQuarto.setBackground(new java.awt.Color(0, 51, 51));
         btnConsultarQuarto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/icon_buscar.png"))); // NOI18N
         btnConsultarQuarto.setText("Buscar Quarto");
+        btnConsultarQuarto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultarQuartoActionPerformed(evt);
+            }
+        });
 
         btnLimpar.setBackground(new java.awt.Color(0, 51, 51));
         btnLimpar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/icon_limpar.png"))); // NOI18N
         btnLimpar.setText("Limpar");
+        btnLimpar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimparActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -315,6 +372,173 @@ public class TelaCadastrarLimpeza extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnConsultarQuartoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarQuartoActionPerformed
+        // TODO add your handling code here:
+        /**
+         * Ação: Vai consulta no um quarto pelo numero e trazer as informação
+         * dele como: ID, NUMERO, TIPO, STATUS, NUMERO CAMAS, CRADO EM, E
+         * OBSERVAÇÃO.
+         */
+        try {
+            if (CampoNumQuarto.getText().isBlank()) {
+                JOptionPane.showMessageDialog(this, "Informe o número do quarto.");
+                return;
+            }
+
+            int numero = Integer.parseInt(CampoNumQuarto.getText().trim());
+            Quarto q = quartoController.buscarPorNumero(numero);
+
+            if (q == null) {
+                JOptionPane.showMessageDialog(this, "Quarto não encontrado.");
+                return;
+            }
+
+            quartoSelecionado = q;
+            preencherTabelaQuarto(List.of(q));
+
+            // Pré-preenche campo do registro de limpeza
+            numQuarto.setText(String.valueOf(q.getNumero()));
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Número do quarto inválido.");
+        }
+
+    }//GEN-LAST:event_btnConsultarQuartoActionPerformed
+
+    private void btnRegistrarNovoStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarNovoStatusActionPerformed
+        // TODO add your handling code here:
+        /**
+         * Corrigir aqui as seguinte codições só vai atualizar o status se o usuario selecionar na tabela o quarto.
+         * Usuario selecionar => preenche o combo => e clicar no btnRegistrarNovoStatus
+         * já esta consultando e atualizando só falta corrigir esse detalhe.
+         */
+        if (quartoSelecionado == null) {
+            JOptionPane.showMessageDialog(this, "Selecione um quarto primeiro.");
+            return;
+        }
+
+        if (comboStatusQuarto.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Selecione um novo status.");
+            return;
+        }
+
+        String novoStatus = comboStatusQuarto.getSelectedItem().toString().toUpperCase();
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Deseja realmente alterar o status do quarto?",
+                "Confirmação",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        quartoSelecionado.setStatus(novoStatus);
+
+        if (quartoController.atualizarQuarto(quartoSelecionado)) {
+            JOptionPane.showMessageDialog(this, "Status do quarto atualizado com sucesso!");
+            preencherTabelaQuarto(List.of(quartoSelecionado));
+        } else {
+            JOptionPane.showMessageDialog(this, "Erro ao atualizar status.");
+        }
+
+        /**
+         * Ação: Usuario após realizar a consultar e encontrar o quarto ele
+         * selecionar na tabela e atualiza o novo status do quarto no
+         * comboStatusQuarto e clica no btnRegistrarNovoStatus
+         */
+    }//GEN-LAST:event_btnRegistrarNovoStatusActionPerformed
+
+    private void btnRegistrarLimpezaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarLimpezaActionPerformed
+        // TODO add your handling code here:
+        if (numQuarto.getText().isBlank() || campoNome.getText().isBlank()) {
+            JOptionPane.showMessageDialog(this, "Preencha os campos obrigatórios.");
+            return;
+        }
+
+        if (comboQuartoLimpo.getSelectedIndex() == 0
+                || comboRoupaCama.getSelectedIndex() == 0
+                || comboInsumoRepostos.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Selecione todas as opções.");
+            return;
+        }
+
+        Date data = dataLimpeza.getDate();
+        if (data == null) {
+            JOptionPane.showMessageDialog(this, "Informe a data da limpeza.");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Deseja registrar a limpeza deste quarto?",
+                "Confirmação",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        // AQUI entra seu LimpezaController futuramente
+        // limpezaController.registrar(...)
+        JOptionPane.showMessageDialog(this, "Limpeza registrada com sucesso!");
+
+        btnLimparActionPerformed(null);
+
+        /**
+         * Ação: Vai regstra uma limpeza onde usuario informa os dados do quarto
+         * e registra a limpeza.
+         * Ao tentar fazer o registro de uma limpeza vai validade de o ususrio preencheu o comboStatusQuarto
+         * antes de finalizar. se o usuario não tiver preenchido aparecer a mensagem.
+         * e o usuario deve ter preenchido todos os campos como: comboStatusQuarto,
+         * numQuarto, comboQuartoLimpo, comboRoupaCama, campoNome, comboInsumoRepostos, dataLimpeza
+         */
+    }//GEN-LAST:event_btnRegistrarLimpezaActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        // TODO add your handling code here:
+        int op = JOptionPane.showConfirmDialog(
+                this,
+                "Deseja cancelar a operação?",
+                "Cancelar",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (op == JOptionPane.YES_OPTION) {
+            btnLimparActionPerformed(null);
+        }
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
+        // TODO add your handling code here:
+        /**
+         * Limpa os campos da tela
+         */
+        CampoNumQuarto.setText("");
+        numQuarto.setText("");
+        campoNome.setText("");
+
+        comboQuartoLimpo.setSelectedIndex(0);
+        comboRoupaCama.setSelectedIndex(0);
+        comboInsumoRepostos.setSelectedIndex(0);
+        comboStatusQuarto.setSelectedIndex(0);
+
+        dataLimpeza.setDate(null);
+
+        ((DefaultTableModel) tabelDadosQuarto.getModel()).setRowCount(0);
+
+        quartoSelecionado = null;
+
+    }//GEN-LAST:event_btnLimparActionPerformed
+
+    private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFecharActionPerformed
+        // TODO add your handling code here:
+        dispose(); // Fechar a tela
+    }//GEN-LAST:event_btnFecharActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
